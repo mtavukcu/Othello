@@ -1,0 +1,361 @@
+package othello;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+public class Game {
+	private Pane _gamePane;
+	private Containable[][] _board;
+	private HashMap<Integer, ArrayList<Integer>> _legalMoves;
+	private HBox _scores;
+	private Label scoreW;
+	private Label scoreB;
+	private Player _white;
+	private Player _black;
+	private Referee _referee;
+	private int _move;
+	private int[][] _dummy;
+	private boolean _hasValid = false;
+
+	public Game() {
+		_gamePane = new Pane();
+		_gamePane.setPrefSize(Constants.GAME_WIDTH, Constants.WINDOW_HEIGHT);
+		_gamePane.setFocusTraversable(true);
+		// _board = new Containable[10][10];
+		this.buildBoard();
+		this.scoreBoard(_gamePane);
+		_legalMoves = new HashMap<Integer, ArrayList<Integer>>(64);
+		// System.out.print(this.findSandwich(3, 5, 1));
+		// System.out.print(this.findSandwich(2, 7, 1).size());
+		// System.out.println(_legalMoves.keySet());
+		_white = new HumanPlayer(this);
+		_black = new HumanPlayer(this);
+		_black.setColor(1);
+		_referee = new Referee(_white, _black);
+		// this.moveSet(0);
+		// this.showMoves();
+		
+	}
+	
+	public boolean isOver() {
+		return _legalMoves.isEmpty();
+	}
+
+	
+//	public Game(Game game) {
+//		_dummy = new int[10][10];
+//		for (int row = 0; row < 10; row++) {
+//			for (int col = 0; col < 10; col++) {
+//				if(game.getBoard()[row][col] != null && game.getBoard()[row][col].state() == 2) {
+//					_dummy[row][col] = 2;
+//				} 
+//				if(game.getBoard()[row][col] != null && game.getBoard()[row][col].state() == 0) {
+//					_dummy[row][col] = 0;
+//				}
+//				if(game.getBoard()[row][col] != null && game.getBoard()[row][col].state() == 1) {
+//					_dummy[row][col] = 1;
+//				}
+//			}
+//		}	
+//	}
+	
+	public void dummyBoard() {
+		_dummy = new int[10][10];
+		for (int row = 0; row < 10; row++) {
+			for (int col = 0; col < 10; col++) {
+				if(_board[row][col] != null && _board[row][col].state() == 2) {
+					_dummy[row][col] = 2;
+				} 
+				if(_board[row][col] != null && _board[row][col].state() == 0) {
+					_dummy[row][col] = 0;
+				}
+				if(_board[row][col] != null && _board[row][col].state() == 1) {
+					_dummy[row][col] = 1;
+				}
+			}
+		}	
+	}
+	
+	public int[][] getDummy() {
+		return _dummy;
+	}
+	
+	
+	public int count(int color) {
+		int count = 0;
+		for (int row = 1; row < 9; row++) {
+			for (int col = 1; col < 9; col++) {
+				if (_board[row][col] != null && _board[row][col].state() == color) {
+					count++;
+				} 
+			}
+		}
+		return count;
+	}
+	
+	public boolean hasValid() {
+		if(_legalMoves.isEmpty()) {
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
+	public void init() {
+		this.clear(0);
+		this.clear(1);
+		this.clear(2);
+		this.clear(3);
+		this.buildBoard();
+		this.scoreBoard(_gamePane);
+		_legalMoves = new HashMap<Integer, ArrayList<Integer>>(64);
+		_white = new HumanPlayer(this);
+		_black = new HumanPlayer(this);
+		_black.setColor(1);
+		_referee = new Referee(_white, _black);
+	}
+
+	public Player getCurrent() {
+		// System.out.println("Current player is: " + _player.getColor());
+		return _referee.getCurrent();
+	}
+
+	public void turn() {
+		_referee.changePlayer();
+	}
+
+	public void scoreBoard(Pane pane) {
+		_scores = new HBox();
+		_scores.setPrefSize(700, 25);
+		_scores.setStyle("-fx-background-color: black;");
+		_scores.setAlignment(Pos.TOP_LEFT);
+		scoreW = new Label("White pieces: " + 2);
+		scoreB = new Label("Black pieces: " + 2);
+		scoreW.setTextFill(Color.WHITE);
+		scoreB.setTextFill(Color.WHITE);
+		_scores.setSpacing(125);
+		_scores.getChildren().addAll(scoreW, scoreB);
+		pane.getChildren().add(_scores);
+	}
+
+	public void setScore(int w, int b) {
+		_scores.getChildren().removeAll(scoreW, scoreB);
+		scoreW = new Label("White pieces: " + w);
+		scoreB = new Label("Black pieces: " + b);
+		scoreW.setTextFill(Color.WHITE);
+		scoreB.setTextFill(Color.WHITE);
+		_scores.getChildren().addAll(scoreW, scoreB);
+	}
+
+	public Pane getRoot() {
+		return _gamePane;
+	}
+
+	public Containable[][] getBoard() {
+		return _board;
+	}
+
+	public HashMap<Integer, ArrayList<Integer>> validMoves() {
+		// System.out.println("Fetching valid moves!");
+		return _legalMoves;
+	}
+
+	public void showMoves() {
+		Object[] indices = _legalMoves.keySet().toArray();
+		for (int i = 0; i < indices.length; i++) {
+			int[] duo = this.toCoords((int) indices[i]);
+			ValidSqr mark = new ValidSqr(_gamePane);
+			mark.posY(duo[0] * Constants.RECT_SIZE);
+			mark.posX(duo[1] * Constants.RECT_SIZE);
+			mark.setSandwich(_legalMoves.get(indices[i])); //Replace with modsquare
+			mark.setIndex((int) indices[i]);
+			
+//			ModSquare pizza = new ModSquare(pane);
+//			_gamePane.getChildren().add(pizza.makeEllipse(pizza.getCircle(), color));
+//			pizza.setX(col * Constants.RECT_SIZE + 25);
+//			pizza.setY(row * Constants.RECT_SIZE + 25);
+
+			if (_board[duo[0]][duo[1]] == null) {
+				_board[duo[0]][duo[1]] = mark;
+			}
+		}
+	}
+
+	public void clear(int state) {
+		for (int row = 1; row < 9; row++) {
+			for (int col = 1; col < 9; col++) {
+				if (_board[row][col] != null && _board[row][col].state() == state) {
+					_gamePane.getChildren().remove((_board[row][col]).getRoot());
+					_board[row][col] = null;
+				}
+			}
+		}
+	}
+
+	public void setMove(int index) {
+		_move = index;
+	}
+
+	public int findMove() {
+		return _move;
+	}
+
+	public void play(int index) {
+		int[] coords = this.toCoords(index);
+		int row = coords[0];
+		int col = coords[1];
+		this.clear(3);
+		_board[row][col] = this.makePiece(_gamePane, this.getCurrent().getColor(), row, col);
+		this.flip(_legalMoves.get(index));
+		_legalMoves.clear();
+		this.setScore(this.count(_white.getColor()),this.count(_black.getColor()));
+		// System.out.println("Playing move!");
+	}
+
+//	public void switchTurn(Player current) {
+//
+//	}
+
+	public void flip(ArrayList<Integer> flipList) {
+		for (int i = 0; i < flipList.size(); i++) {
+			int[] flipCoords = this.toCoords(flipList.get(i));
+			if (_board[flipCoords[0]][flipCoords[1]].state() == 0) {
+				((Piece) _board[flipCoords[0]][flipCoords[1]]).setBlack();
+			} else {
+				((Piece) _board[flipCoords[0]][flipCoords[1]]).setWhite();
+			}
+		}
+	}
+
+	public void moveSet(int color) {
+		int counter = 0;
+		for (int row = 1; row < 9; row++) {
+			for (int col = 1; col < 9; col++) {
+				if (_board[row][col] == null) {
+					ArrayList<Integer> sandwichables = this.findSandwich(row, col, color);
+					if (sandwichables.size() > 0) {
+						_legalMoves.put(this.toIndex(row, col), sandwichables);
+						counter++;
+					}
+				}
+			}
+		}
+		if(counter > 0) {
+			_hasValid = true;
+		} else {
+			_hasValid = false;
+		}
+//		System.out.println(color + " Has valid moves: " +_hasValid);
+	}
+
+	public ArrayList<Integer> findSandwich(int row, int col, int color) {
+		int[][] dirs = Constants.DIRECTIONS;
+		ArrayList<Integer> legalPieces = new ArrayList<Integer>();
+		if (_board[row][col] == null) { // row != 0 || row != 9 || col != 0 || col != 9
+			for (int i = 0; i < dirs.length; i++) {
+				int y = dirs[i][0];
+				int x = dirs[i][1];
+				legalPieces.addAll(this.find(row, col, y, x, color));
+			}
+		}
+		return legalPieces;
+	}
+
+	private ArrayList<Integer> find(int row, int col, int dirY, int dirX, int color) {
+		ArrayList<Integer> pieces = new ArrayList<Integer>();
+		while (true) {
+			if (_board[row + dirY][col + dirX] == null || _board[row + dirY][col + dirX].state() == 2) {
+				pieces = new ArrayList<Integer>();
+				break;
+			}
+			else if (_board[row + dirY][col + dirX].state() != color) {
+				row += dirY;
+				col += dirX;
+				pieces.add(_board[row][col].getIndex());
+			} else if (_board[row + dirY][col + dirX].state() == color) {
+				break;
+			}
+		}
+		return pieces;
+	}
+
+	// Builds the game board; places empty squares and walls
+	private void buildBoard() {
+		_board = new Containable[10][10];
+		for (int row = 0; row < 10; row++) {
+			for (int col = 0; col < 10; col++) {
+				if (row == 0 || row == 9 || col == 0 || col == 9) {
+					Wall border = new Wall(_gamePane);
+					border.posX(col * Constants.RECT_SIZE);
+					border.posY(row * Constants.RECT_SIZE);
+					_board[row][col] = border;
+					
+//					ModSquare wall = new ModSquare(_gamePane);
+//					_gamePane.getChildren().add(wall.makeSquare(wall.getRect(), 2));
+//					wall.setX(col * Constants.RECT_SIZE);
+//					wall.setY(row * Constants.RECT_SIZE);
+//					wall.setIndex(this.toIndex(row, col));
+//					_board[row][col] = wall;
+					
+				} else {
+					Rectangle empty = new Rectangle(Constants.RECT_WIDTH, Constants.RECT_HEIGHT);
+					_gamePane.getChildren().add(empty);
+					empty.setX(col * Constants.RECT_SIZE);
+					empty.setY(row * Constants.RECT_SIZE);
+					empty.setStroke(Color.BLACK);
+					empty.setFill(Color.GREEN);
+//					empty.addEventHandler(MouseEvent.MOUSE_CLICKED, new MouseHandler());
+				}
+			}
+		}
+		_board[4][4] = this.makePiece(_gamePane, 1, 4, 4);
+		_board[5][5] = this.makePiece(_gamePane, 1, 5, 5);
+		_board[4][5] = this.makePiece(_gamePane, 0, 4, 5);
+		_board[5][4] = this.makePiece(_gamePane, 0, 5, 4);
+	}
+
+	// Creates a piece based on a binary integer: if 0 then the piece will be white
+	// by default, if 1 it will be black
+	private Piece makePiece(Pane pane, int color, int row, int col) {
+		Piece piece = new Piece(pane);
+		piece.posY(row * Constants.RECT_SIZE + 25);
+		piece.posX(col * Constants.RECT_SIZE + 25);
+
+		if (color == 1) {
+			piece.setBlack();
+		}
+	
+		piece.setIndex(this.toIndex(row, col));
+		
+//		ModSquare pizza = new ModSquare(pane);
+//		_gamePane.getChildren().add(pizza.makeEllipse(pizza.getCircle(), color));
+//		pizza.setX(col * Constants.RECT_SIZE + 25);
+//		pizza.setY(row * Constants.RECT_SIZE + 25);
+//		return pizza;
+		
+		return piece;
+	}
+
+	public int toIndex(int row, int col) {
+		return row * 10 + col;
+	}
+
+	public int[] toCoords(int index) {
+		int[] coordlist = new int[2];
+		int col = index % 10;
+		int row = (index - col) / 10;
+		coordlist[0] = row;
+		coordlist[1] = col;
+		return coordlist;
+	}
+
+}

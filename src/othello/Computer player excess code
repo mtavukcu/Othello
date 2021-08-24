@@ -1,0 +1,68 @@
+	public void weights() {
+		_boardWeights = new double[10][10];
+		for (int row = 1; row < 9; row++) {
+			for (int col = 3; col < 7; col++) {
+				if((row == 1 || row == 8) && (col == 3 || col == 6)) {
+					_boardWeights[row][col] = 30;
+				}
+				if((row == 1 || row == 8) && (col == 4 || col == 5)) {
+					_boardWeights[row][col] = 25;
+				}
+				if((row == 2 || row == 7)) {
+					_boardWeights[row][col] = -10;
+				} else {
+					_boardWeights[row][col] = 2;
+				}
+			}
+		}	
+		for (int row = 1; row < 9; row++) {
+			for (int col = 1; col < 3; col++) {
+				if(col == 1 && (row == 1 || row == 8)) {
+					_boardWeights[row][col] = 200;
+				}
+				if(col == 1 && (row == 2 || row == 7)) {
+					_boardWeights[row][col] = -70;
+				}
+				if(col == 2 && (row == 1 || row == 8)) {
+					_boardWeights[row][col] = -70;
+				}
+				if(col == 2 && (row == 2 || row == 7)) {
+					_boardWeights[row][col] = -100;
+				}
+				if(col == 1 && (row == 3 || row == 6)) {
+					_boardWeights[row][col] = 30;
+				}
+				if(col == 1 && (row == 4 || row == 5)) {
+					_boardWeights[row][col] = 25;
+				}
+				if(col == 2 && (row == 3 || row == 4 || row == 5 || row == 6)) {
+					_boardWeights[row][col] = -10;
+				}
+			}
+		}
+		for (int row = 0; row < 8; row++) {
+			for (int col = 6; col < 7; col++) {
+				if(col == 7 && (row == 1 || row == 8)) {
+					_boardWeights[row][col] = -70;
+				}
+				if(col == 7 && (row == 2 || row == 7)) {
+					_boardWeights[row][col] = -100;
+				}
+				if(col == 8 && (row == 1 || row == 8)) {
+					_boardWeights[row][col] = 200;
+				}
+				if(col == 8 && (row == 2 || row == 7)) {
+					_boardWeights[row][col] = -70;
+				}
+				if(col == 8 && (row == 3 || row == 6)) {
+					_boardWeights[row][col] = 30;
+				}
+				if(col == 8 && (row == 4 || row == 5)) {
+					_boardWeights[row][col] = 25;
+				}
+				if(col == 7 && (row == 3 || row == 4 || row == 5 || row == 6)) {
+					_boardWeights[row][col] = -10;
+				}
+			}
+		}
+	}

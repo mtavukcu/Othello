@@ -1,0 +1,111 @@
+package othello;
+
+import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Rectangle;
+
+public class HumanPlayer implements Player {
+	private Game _g;
+	private int _color;
+	private Move _move;
+	private int _moveIndex;
+//	private Boolean _endTurn = false;
+
+	public HumanPlayer(Game game) { 
+		//0 represents white, like chess, the default player (a.k.a player to make first move) is set to white
+		_color = 0;
+		_g = game;
+	}
+	
+	@Override
+	public boolean hasValid() {
+		return _g.hasValid();
+	}
+	
+//	@Override
+//	public Boolean checkTurn() {
+//		return _endTurn;
+//	}
+//	@Override
+//	public void rest() {
+//		_endTurn = true;
+//	}
+//	@Override
+//	public void ready() {
+//		_endTurn = false;
+//	}
+	
+//	public Move getMove() {
+//		return _move;
+//	}
+	
+	public void select(int i) {
+		 _moveIndex = i;
+	}
+	
+	public void setListener(Node node) {
+		node.addEventHandler(MouseEvent.MOUSE_CLICKED, new MouseHandler());
+	}
+	
+	@Override
+	//Return the color of the player
+	public int getColor() {
+		return _color;
+	}
+	
+	@Override
+	//Change color of player and return it
+	public int setColor(int color) {
+		return _color = color;
+	}
+
+	@Override
+	public void seePlay() {
+		_g.moveSet(_color);
+		_g.showMoves();
+		for (int row = 1; row < 9; row++) {
+			for (int col = 1; col < 9; col++) {
+				if (_g.getBoard()[row][col] != null && _g.getBoard()[row][col].state() == 3) {
+					this.setListener(_g.getBoard()[row][col].getRoot());
+				}
+			}
+		}
+	}
+
+	@Override
+	public void makeMove() {
+//		System.out.println("Making my move!");
+//		if(_endTurn == false) {
+//			
+//		}
+//			int choice = _g.findMove();
+			_move = new Move(_moveIndex,_g.validMoves().get(_moveIndex));
+			_g.play(_moveIndex);
+//			HumanPlayer.this.rest();
+			_g.turn();
+		
+//		System.out.println("My move's score is: " + _move.getScore());
+	}
+	
+	private class MouseHandler implements EventHandler<MouseEvent> {
+		@Override
+		public void handle(MouseEvent e) {
+			if(HumanPlayer.this.hasValid()) {
+				int row = (int) (e.getY() / Constants.RECT_SIZE);
+				int col = (int) (e.getX() / Constants.RECT_SIZE);
+				System.out.println("Row is: " + row);
+				System.out.println("Column is: " + col);
+				int index = _g.toIndex(row, col); 
+//				System.out.println(_g.getBoard()[row][col]);
+				if(_g.getBoard()[row][col] != null && _g.getBoard()[row][col].state() == 3) {
+//					System.out.println("VALID!");
+					HumanPlayer.this.select(index);
+					HumanPlayer.this.makeMove();
+				}
+			}
+			e.consume();
+		}
+
+	}
+}

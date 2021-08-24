@@ -1,0 +1,48 @@
+Handin: Final submission
+
+Design choices:
+
+Interfaces:
+Player: This interface allows different types of players to be switch in and out of game and referee. This interface has six methods.
+makeMove() for players to make a move, seePlay() so that players can communicate with the Game class to get their valid moves, getColor() and setColor() 
+to determine what color the player is, isBot() to represent whether the player is a computer or not, and hasValid() to check if player has valid moves.
+
+Game: The main design choices for this class are how I find sandwiches and build the game board. Firstly, I use a single, 10x10 board where the edges are padded with walls,
+made via configuring ModSquare class instances. This makes sandwich checking easier as the actual game is played on the 8x8 inner section, there for I mitigated the risk of 
+hitting out of bounds indices. I also convert the row and column coordinate of a space in the board to a single integer. The row is multiplied by 10, then I add the column to 
+it. To convert back, I get the mod 10 of the index number for the column, then subtract this value from the index number and divide by 10. This allows me to store a move in terms
+of its position, as a single integer. I have a find method that given an array of row and column displacements (represents a direction), gets the next board index in that direction 
+as long as there are pieces of the opponents color. I have an arraylist storing the single index value of these pieces. If the next square in a given direction is an empty space
+or a wall, I reset the arraylist, emptying it, then break as we have not found a valid sandwich. Then the method findSandwich calls find for each eight direction and adds all 
+the arraylists into a single list. This list contains all pieces to be flipped. Finally, I use a hashmap to map the index of the valid move to this list of pieces. This is done
+in moveSet, which also checks whether a player has valid moves. If not, I call finish() which looks if the other player has valid moves. If both players don't, its game over and a
+label is displayed.
+
+Referee: This class manages the turn taking logic and tells players to move when it is their turn. There is a private instance variable for game, which allows the associated
+game to be used. This helps the referee show players their moves. In the turn change method, changePlayer, the referee will set the turn to either 0 or 1, depending on what it
+was when the method is called. There is also private instance variables for the first, second and current player. This allows the current player to be correctly updated and also
+for the referee to prompt players to make their move or see their move.
+
+ModSquare: I chose to use one board for othello that contains empty spaces, walls, white and black pieces, and highlighted squares to show valid moves. This class
+contains both a rectangle and circle node that are created depending on whether ModSquare will represent pieces, or walls or valid squares. The game class configures 
+ModSquares for the intended purpose in the buildBoard() method, for instance, passing in 2 for the ModSquare state. In the constructor for ModSquare, I call setup(pane)
+to graphically build the square using this state variable. For empty spaces, the board's index is simply null. This makes for a good connection between logic and graphics.
+
+Move: This class models a move with its score, value, list of pieces it can flip, and an index number. The move is instantiated then filled with the necessary information
+
+HumanPlayer: The player class has a MouseListener that uses e.getX() and e.getY() to get the position of the mouse. Dividing these values by 50 and casting to an integer 
+yields the correct row and column coordinates. This works well since each square in the board is 50 by 50. Then, association with the game class allows the player to convert
+these coordinates into a single index. This index is then set as the chosen move. Then the player calls makeMove on this index.
+
+ComputerPlayer - getBestMove:
+The return type is Move, and the best move is chosen depending on the evaluation of board weights and the computer intelligence. For when the intelligence is greater than 1, I 
+recursively call getBestMove and negate its value, then store this new value as the moves value. This is because we are viewing it from the opponent's perspective. I then compare
+it with the best value, which is initially set to a very low value. If the current move, udpdate through evaluateBoard and/or the recursive calls, is the best move, then I 
+store it as the best move. If all recursive calls have returned, we are done. I return the best move. In the makeMove method, the computer player uses the move returned by
+getBestMove to play. If the move returned has no flippable pieces, as is the case when the player is of intelligenc one and has no valid moves, or the game is over. Then the
+computer player skips his turn.
+
+Known bugs: The computer is doing correct recursion and chooses the best move by comparing values of future moves. However, there seems to be an issue with the chosen move
+and the pieces that can be flipped by it. I map the position of a valid move to the pieces that can be flipped by it within a hashmap in game. There seems to be inconsistency 
+in the mapping, likely caused by my sandwhich checking algorithm. This also causes a problem in computer vs human play. However, both human vs computer and computer vs. computer
+is playable, although bugged.

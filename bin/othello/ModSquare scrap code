@@ -1,0 +1,71 @@
+//	private Pane _pane;
+//	private boolean _isWall = false;
+
+//		_face = new Pane();
+//		_pane = pane;
+
+//		_square = new Rectangle(Constants.RECT_WIDTH, Constants.RECT_HEIGHT);
+//		_square.setStroke(Color.BLACK);
+//		pane.getChildren().add(_square);
+
+//	public Rectangle getRect() {
+//		return _square;
+//	}
+//	
+//	public Ellipse getCircle() {
+//		return _circle;
+//	}
+
+
+//	public Rectangle makeSquare(Rectangle rect, int state) {
+////		rect = new Rectangle(Constants.RECT_WIDTH, Constants.RECT_HEIGHT);
+//		if(state == 2) {
+//			rect.setStroke(Color.BLACK);
+//		} else if(state == 3) {
+//			rect.setFill(Color.RED);
+//			rect.setStroke(Color.RED);
+//			rect.setOpacity(0.6);
+//		} else { 
+//			System.out.println("Not a wall or valid move square");
+//			return null;
+//		}
+//		return rect;
+//	}
+	
+//	public Ellipse makeEllipse(Ellipse ellipse, int state) {
+////		ellipse = new Ellipse(Constants.PIECE_SIZE, Constants.PIECE_SIZE);
+//		if(state == 0) {
+//			_circle.setFill(Color.WHITE);
+//			_circle.setStroke(Color.WHITE);
+//		} else if(state == 1) {
+//			_circle.setFill(Color.BLACK);
+//			_circle.setStroke(Color.BLACK);
+//		} else {
+//			System.out.println("Not a piece");
+//			return null;
+//		}
+//		return ellipse;
+//	}
+
+//	public Pane face() {
+//		return _face;
+//	}
+	//Return the contents of a ModSquare
+//	public ArrayList<Piece> pieces() {
+//		return _contents;
+//	}
+	//Return whether the square is empty
+//	public boolean isEmpty() {
+//		return _contents.size() == 0;
+//	}
+	
+	//Returns whether the square is a wall or not [a piece, or a valid move square]
+//	public boolean state() {
+//		return _isWall;
+//	}
+	//If the mod square is not a wall, changes its state to a wall
+//	public void makeWall() {
+//		if(_isWall == false) {
+//			_isWall = true;
+//		}
+//	}

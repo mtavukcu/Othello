@@ -1,0 +1,17 @@
+//				boolean flag = false;
+//				while (true) {
+//					if (_board[row + dirs[i][0]][col + dirs[i][1]] == null
+//							|| _board[row + dirs[i][0]][col + dirs[i][1]].state() == 2) {
+//						break;
+//					}
+//					if (_board[row + dirs[i][0]][col + dirs[i][1]].state() != color) {
+//						row += dirs[i][0];
+//						col += dirs[i][1];
+//						flag = true;
+//					} else if (_board[row + dirs[i][0]][col + dirs[i][1]].state() == color) {
+//						if (flag == true) {
+//							sandwich = true;
+//							break;
+//						}
+//					}
+//				}

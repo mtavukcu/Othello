@@ -1,0 +1,66 @@
+//	private void findMove() {
+//		for (int row = 0; row < 10; row++) {
+//			for (int col = 0; col < 10; col++) {
+//				if (row == 0 || row == 9 || col == 0 || col == 9) {
+//					continue;
+//				}  
+//				else {
+//					if(_g.findSandwich(row, col, _color) == true) {
+//						 Rectangle marked = new Rectangle(Constants.RECT_WIDTH, Constants.RECT_HEIGHT);
+//						 _g.getRoot().getChildren().add(marked);
+//						 marked.setX(col * Constants.RECT_SIZE);
+//						 marked.setY(row * Constants.RECT_SIZE);
+//						 marked.setStroke(Color.BLACK);
+//						 marked.setFill(Color.GRAY);
+//						 marked.setOpacity(50);
+//					}
+//				}
+//			}
+//		}
+//	}
+
+	public void updateScore() {
+		int white = 0;
+		int black = 0;
+		for (int row = 1; row < 9; row++) {
+			for (int col = 1; col < 9; col++) {
+				if (_board[row][col] != null && _board[row][col].state() == 0) {
+					white++;
+				} else if (_board[row][col] != null && _board[row][col].state() == 1) {
+					black++;
+				}
+			}
+		}
+		this.setScore(white, black);
+	}
+	
+		private class MouseHandler implements EventHandler<MouseEvent> {
+		@Override
+		public void handle(MouseEvent e) {
+			// System.out.println("Click");
+			// System.out.println("X: " + (int) e.getX() + " Y: " + (int)e.getY());
+			// int x = (int) e.getX();
+			// int y = (int) e.getY();
+			//
+			// int column = ((x*(Constants.GAME_WIDTH-2))/Constants.WINDOW_WIDTH+1)/25;
+			// int row = ((y*(Constants.WINDOW_HEIGHT-2))/Constants.WINDOW_HEIGHT+1)/25;
+			//
+			// System.out.println("Row is: " + row + " Column is: " + column);
+
+			e.consume();
+		}
+	}
+	
+	ValidSqr class mousehandler extra: {
+				// System.out.println("Click");
+			// System.out.println("X: " + (int) e.getX() + " Y: " + (int)e.getY());
+			// int x = (int) e.getX();
+			// int y = (int) e.getY();
+			//
+			// int column = ((x*(Constants.GAME_WIDTH-2))/Constants.WINDOW_WIDTH+1)/25;
+			// int row = ((y*(Constants.WINDOW_HEIGHT-2))/Constants.WINDOW_HEIGHT+1)/25;
+			//
+			// System.out.println("Row is: " + row + " Column is: " + column);
+
+			// System.out.println(ValidSqr.this.getIndex());
+			// System.out.println(ValidSqr.this.getSandwich()); }

@@ -1,0 +1,62 @@
+	public int getBestMove(int[][] board, int intelligence, int currPlayer) {
+		if(_game.gameOver()) {
+			int curr = _game.count(currPlayer);
+			int opp = _game.count(-currPlayer);
+			if(curr > opp) {
+//				Move win = new Move(0,null,(int)1e99);
+//				return win;
+				return (int)1e99;
+			} else if(curr < opp) {
+//				Move loss = new Move(0,null,(int)-1e99);
+//				return loss;
+				return (int)-1e99;
+			} else if(curr == opp) {
+//				Move neutral = new Move(0,null,0);
+//				return neutral;
+				return 0;
+			}
+		}
+		if(this.hasValid() == false) {
+			if(intelligence == 1) {
+//				Move m = new Move(0,null,-1000);
+//				return m;
+				return -1000;
+			} 
+			else {
+				Move m = getBestMove(board, intelligence - 1, -currPlayer);
+				m.getValue();
+				return -getBestMove(board, intelligence - 1, -currPlayer);
+			}
+		} else {
+			Object[] list = _game.validMoves().keySet().toArray();
+			int best = (int)-1e99;
+			Move best_move;
+			for(int i = 0;i<list.length;i++) {
+				int curr = 0;
+//				Move m = new Move((int)list[i],_game.validMoves().get(list[i]),0);
+				int[][] dummy = _game.dummyBoard();
+				_game.cpuPlay((int) list[i], dummy, _game.validMoves().get(list[i]), currPlayer);
+				if(intelligence == 1) {
+					curr = evaluateBoard(currPlayer,dummy);
+					_moves.put(value, (int) list[i]);
+				} else {
+					Move curr_move = getBestMove(dummy,intelligence-1,-currPlayer);
+					curr = -curr_move.getValue();
+					if(curr > best) {
+						best = curr;
+						best_move = curr_move;
+					}
+					
+					_moves.put(value, (int) list[i]);
+				}
+			}
+		}
+		Object[] list = _moves.keySet().toArray();
+		int max = (int)-1e99;
+		for(int i=0;i<list.length;i++) {
+			if((int)list[i] > max) {
+				max = (int) list[i];
+			}
+		}
+		return max;
+	}
